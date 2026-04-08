@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Voice Enthusiasm Pilot</title>
+
+    <!-- Core jsPsych -->
+    <link rel="stylesheet" href="jspsych.css">
+    <script src="jspsych.js"></script>
+
+    <!-- Plugins -->
+    <script src="plugins/plugin-html-button-response.js"></script>
+    <script src="plugins/plugin-audio-button-response.js"></script>
+    <script src="plugins/plugin-html-slider-response.js"></script>
+    <script src="plugins/plugin-html-keyboard-response.js"></script>
+    <script src="plugins/plugin-survey-html-form.js"></script>
+
+    <style>
+        .circle-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .jspsych-content {
+            max-width: 1200px;
+            margin: auto;
+        }
+        .circle-option input[type="radio"] {
+            display: none;
+        }
+        .circle-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        .circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid black;
+            margin-bottom: 5px;
+        }
+        .circle-option input[type="radio"]:checked + .circle {
+            background-color: black;
+        }
+        .circle-label {
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getDatabase, ref, push, set } 
+from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAP1j1sTl2dVA10T2Q9gXZ7aej09vBears",
+  authDomain: "enthusiasm-pilot-three-pitches.firebaseapp.com",
+  projectId: "enthusiasm-pilot-three-pitches",
+  storageBucket: "enthusiasm-pilot-three-pitches.firebasestorage.app",
+  messagingSenderId: "185225069275",
+  appId: "1:185225069275:web:3e50fcaeeee4c3215d42fe",
+  measurementId: "G-Z0QZ85HD67"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.saveTrialData = async function(data) {
+    try {
+        const participantID = data.participant;
+
+        const newRef = push(ref(db, `participants/${participantID}/trials`));
+        await set(newRef, data);
+
+        console.log("Saved:", data);
+    } catch (e) {
+        console.error("Error saving data:", e);
+    }
+};
+</script>
+
+<!-- Load experiment -->
+<script src="experiment.js"></script>
+
+</body>
+</html>
