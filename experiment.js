@@ -2,10 +2,19 @@
 const urlParams = new URLSearchParams(window.location.search);
 const PARTICIPANT_ID = urlParams.get('PID') || `P${Math.floor(Math.random() * 1e9)}`;
 
+/*--------Confirmation code---------*/
+const CONFIRMATION_CODE = "1A349ABF8E";
+
 /* ---------- Initialize jsPsych ---------- */
 const jsPsych = initJsPsych({
     show_progress_bar: true,
-    auto_update_progress_bar: true
+    auto_update_progress_bar: true,
+    on_finish: function() {
+        document.body.innerHTML = `
+            <h2>Thank you!</h2>
+            <p>You have completed the experiment.</p>
+        `;
+    }
 });
 
 const voices = {
@@ -83,6 +92,8 @@ const voices = {
     },
 };
 
+const pairVersionMap = {};
+
 const audioFiles = [];
 
 Object.values(voices).forEach(v => {
@@ -117,9 +128,9 @@ const scenarios = [
             and classroom conflict effectively.   </p>
         `,
         candidates: [
-            { name: "Jess", description: "I have worked as a daycare supervisor in the city for the past five years, managing classroom dynamics, staff, and behavioural difficulties. When our center adopted a new play-based curriculum, I supported staff by facilitating planning sessions and sharing strategies that made the shift feel manageable and aligned with their teaching styles. As a supervisor I’ve also managed incidents between children involving disruptive behaviours during class time. By implementing firm and consistent expectations, I was able to prevent further outbursts.", voice_id: "F1" },
-            { name: "Mary", description: "For the past three years, I have worked as a staff lead at a preschool where I take pride in fostering a positive team culture rooted in accountability, communication, and respect. This focus on team culture shaped how I support staff through change and new initiatives. As we adopted changes in the curriculum, I collaborated with staff to create simple templates and provide hands-on support. This helped reduce stress and misunderstanding and facilitated greater consistency across classrooms.", voice_id: "F2" },
-            { name: "Rebecca", description: "I have three years of experience working as an educator at a learning centre in downtown Toronto. In that role, I guided children through daily activities to support their learning and development. I worked closely with children to build routines that encouraged engagement and confidence. For instance, I regularly led circle time activities, prompting children to participate in games and sing-alongs. Outside of work, I coach a youth soccer team and have received recognition for leading the most improved team.", voice_id: "F3" }
+            { name: "Jess", description: "I have worked as a daycare supervisor in the city for the past five years, managing classroom dynamics, staff, and behavioural difficulties. When our center adopted a new play-based curriculum, I supported staff by facilitating planning sessions and sharing strategies that made the shift feel manageable and aligned with their teaching styles. As a supervisor I’ve also managed incidents between children involving disruptive behaviours during class time. By implementing firm and consistent expectations, I was able to prevent further outbursts.", voice_id: "F1", pair_id: "ece1_pair1" },
+            { name: "Mary", description: "For the past three years, I have worked as a staff lead at a preschool where I take pride in fostering a positive team culture rooted in accountability, communication, and respect. This focus on team culture shaped how I support staff through change and new initiatives. As we adopted changes in the curriculum, I collaborated with staff to create simple templates and provide hands-on support. This helped reduce stress and misunderstanding and facilitated greater consistency across classrooms.", voice_id: "F2", pair_id: "cross_pair_ece_1" },
+            { name: "Rebecca", description: "I have three years of experience working as an educator at a learning centre in downtown Toronto. In that role, I guided children through daily activities to support their learning and development. I worked closely with children to build routines that encouraged engagement and confidence. For instance, I regularly led circle time activities, prompting children to participate in games and sing-alongs. Outside of work, I coach a youth soccer team and have received recognition for leading the most improved team.", voice_id: "F3", pair_id: "ece1_pair1" }
         ]
     },
     {
@@ -136,9 +147,9 @@ const scenarios = [
             will foster close relationships with children and families and bring new proven techniques to the classroom.</p>
         `,
         candidates: [
-            { name: "Julia", description: "I spent the past two years working in toddler and preschool classrooms. In these roles, my main focus was helping to plan activities and maintain structured routines for the lead educators to follow. As an activity planner, I communicated effectively with lead educators to develop cohesive daily routines and have maintained contact with many of them even after my contract ended. I highly value continual growth and am always researching new activities that maximize children’s learning and healthy development.", voice_id: "F4" },
-            { name: "Maya", description: "For the past three years, I have worked at a preschool on children’s developmental milestones. I value the importance of clear communication, and I like to host a monthly ‘family morning’ where parents and children can join in on a circle time activity and parents chat informally about their child’s progress. Outside of work, I regularly take professional development courses that I can apply to my own role, as I strongly believe in the value of evidence based educational strategies.", voice_id: "F5" },
-            { name: "Naomi", description: "I have four years of experience working as a classroom assistant, helping implement learning activities and supporting daily routines. I make the effort to speak with parents informally during drop-off and pickup, and I appreciate how these interactions can help build trust overtime. I’ve also volunteered at local community events, allowing me to collaborate with different age groups and support environments that bring people together. These are values I hope to bring into my work with children and their families. ", voice_id: "F6" }
+            { name: "Julia", description: "I spent the past two years working in toddler and preschool classrooms. In these roles, my main focus was helping to plan activities and maintain structured routines for the lead educators to follow. As an activity planner, I communicated effectively with lead educators to develop cohesive daily routines and have maintained contact with many of them even after my contract ended. I highly value continual growth and am always researching new activities that maximize children’s learning and healthy development.", voice_id: "F4", pair_id: "ece2_pair1" },
+            { name: "Maya", description: "For the past three years, I have worked at a preschool on children’s developmental milestones. I value the importance of clear communication, and I like to host a monthly ‘family morning’ where parents and children can join in on a circle time activity and parents chat informally about their child’s progress. Outside of work, I regularly take professional development courses that I can apply to my own role, as I strongly believe in the value of evidence based educational strategies.", voice_id: "F5", pair_id: "cross_pair_ece_2" },
+            { name: "Naomi", description: "I have four years of experience working as a classroom assistant, helping implement learning activities and supporting daily routines. I make the effort to speak with parents informally during drop-off and pickup, and I appreciate how these interactions can help build trust overtime. I’ve also volunteered at local community events, allowing me to collaborate with different age groups and support environments that bring people together. These are values I hope to bring into my work with children and their families. ", voice_id: "F6", pair_id: "ece2_pair1" }
         ]
     },
     {
@@ -154,9 +165,9 @@ const scenarios = [
             team stability. We are looking for a new CEO to help navigate these challenges and opportunities.</p>
         `,
         candidates: [
-            { name: "Richard", description: "In my last role, I oversaw expansion of the company into Germany and the Netherlands. I speak German and have a network of contacts in both countries. Shortly after initiating the expansion, we were confronted by an aggressive takeover attempt. I worked directly with the board and our lawyers, investors, and regulators to fend off the aggression and safeguard shareholder value, while also keeping focus on our long-term corporate goals. I keep people calm and grounded when things heat up.", voice_id: "M1" },
-            { name: "Scott", description: "I have successfully led the launch of software technology products in Europe as the vice president of a multinational company. I also helped set up our first offices and client networks in both Germany and Spain. I am fully conversant in German and French, and I know how to effectively navigate cultural and regulatory differences in various contexts. I’m excited about helping companies grow across borders and I like being the person who connects the dots between people and markets.", voice_id: "M2" },
-            { name: "John", description: "I have successfully led corporate organizations through intense and challenging internal changes, including board turnover and investor turmoil, while helping the company maintain steady focus and consistently grow profits over time. I have also worked very closely with legal teams on contract disputes, negotiations, and restructuring plans. What I bring to the table is the ability to keep a company calm, collected, and focused while things shift around them.", voice_id: "M3" }
+            { name: "Richard", description: "In my last role, I oversaw expansion of the company into Germany and the Netherlands. I speak German and have a network of contacts in both countries. Shortly after initiating the expansion, we were confronted by an aggressive takeover attempt. I worked directly with the board and our lawyers, investors, and regulators to fend off the aggression and safeguard shareholder value, while also keeping focus on our long-term corporate goals. I keep people calm and grounded when things heat up.", voice_id: "M1", pair_id: "ceo1_pair1" },
+            { name: "Scott", description: "I have successfully led the launch of software technology products in Europe as the vice president of a multinational company. I also helped set up our first offices and client networks in both Germany and Spain. I am fully conversant in German and French, and I know how to effectively navigate cultural and regulatory differences in various contexts. I’m excited about helping companies grow across borders and I like being the person who connects the dots between people and markets.", voice_id: "M2", pair_id: "cross_pair_ceo_1" },
+            { name: "John", description: "I have successfully led corporate organizations through intense and challenging internal changes, including board turnover and investor turmoil, while helping the company maintain steady focus and consistently grow profits over time. I have also worked very closely with legal teams on contract disputes, negotiations, and restructuring plans. What I bring to the table is the ability to keep a company calm, collected, and focused while things shift around them.", voice_id: "M3", pair_id: "ceo1_pair1" }
         ]
     },
     {
@@ -175,9 +186,9 @@ const scenarios = [
             help us achieve these goals. </p>
         `,
         candidates: [
-            { name: "James", description: "I was appointed VP head of human resources while my current company was struggling with low morale and employee retention. My approach was to empathize and view the situation from the employee’s perspective. I initiated steps to make the employees feel heard at every level.  This led to the opening of corporate daycare facilities and encouraging flexible hours. We also initiated regular company retreats to reinforce team cohesion. After three years our employee retention rate is 95% and corporate morale at an all-time high. I believe engaged, motivated employees are essential to long-term success and overall profitability.", voice_id: "M4" },
-            { name: "Thomas", description: "As vice president of a multinational green tech company, I led system updates in Germany and France to help clients comply with new EU climate regulations. Around the same time, COVID restrictions forced a shift to remote work, which caused isolation, low morale, and a loss of shared purpose. I implemented several initiatives to address these challenges, resulting in an 67% increase in retention and a 73% boost in job satisfaction over the next three years. To me, leadership means being steady, compassionate, empathetic, and mission-focused. I still bike to work and strive to live by the values we promote.", voice_id: "M5" },
-            { name: "Brian", description: "I have held leadership positions at the vice president level in both marketing and finance across several well-established multinational corporations. In my marketing role, we successfully increased U.S. market share by 12% over a two-year period under my direct leadership. In the finance position, I implemented strategic measures to reduce company debt and boost shareholder equity, which ultimately resulted in a 54% increase in our stock value. I consider myself a well-rounded, seasoned corporate executive with a strong track record of results who can position your organization for sustained growth and long-term profitability.", voice_id: "M6" }
+            { name: "James", description: "I was appointed VP head of human resources while my current company was struggling with low morale and employee retention. My approach was to empathize and view the situation from the employee’s perspective. I initiated steps to make the employees feel heard at every level.  This led to the opening of corporate daycare facilities and encouraging flexible hours. We also initiated regular company retreats to reinforce team cohesion. After three years our employee retention rate is 95% and corporate morale at an all-time high. I believe engaged, motivated employees are essential to long-term success and overall profitability.", voice_id: "M4", pair_id: "ceo2_pair1" },
+            { name: "Thomas", description: "As vice president of a multinational green tech company, I led system updates in Germany and France to help clients comply with new EU climate regulations. Around the same time, COVID restrictions forced a shift to remote work, which caused isolation, low morale, and a loss of shared purpose. I implemented several initiatives to address these challenges, resulting in an 67% increase in retention and a 73% boost in job satisfaction over the next three years. To me, leadership means being steady, compassionate, empathetic, and mission-focused. I still bike to work and strive to live by the values we promote.", voice_id: "M5", pair_id: "ceo2_pair1" },
+            { name: "Brian", description: "I have held leadership positions at the vice president level in both marketing and finance across several well-established multinational corporations. In my marketing role, we successfully increased U.S. market share by 12% over a two-year period under my direct leadership. In the finance position, I implemented strategic measures to reduce company debt and boost shareholder equity, which ultimately resulted in a 54% increase in our stock value. I consider myself a well-rounded, seasoned corporate executive with a strong track record of results who can position your organization for sustained growth and long-term profitability.", voice_id: "M6", pair_id: "cross_pair_ceo_2" }
         ]
     }
 ];
@@ -206,14 +217,37 @@ function createDescriptionRatingTrial(candidate, scenario) {
         `,
         html: `<div class="circle-container">${optionsHtml}</div>`,
         button_label: "Submit",
-        data: {scenario: scenario.id, candidate: candidate.name, phase: "text"}     
+        
+        data: {scenario: scenario.id, candidate: candidate.name, phase: "text"},
+    
+        on_finish: function(data) {
+            data.participant = PARTICIPANT_ID;
+            data.rating = data.response.rating;
+            delete data.response;
+            saveTrialData(data);
+        }
     };
 }
 
 function createAudioRatingTrial(candidate, scenario) {
 
     if (!candidate.audio_version) {
-        candidate.audio_version = Math.random() < 0.5 ? "v1" : "v2";
+
+        const pairId = candidate.pair_id;
+
+        if (pairId && pairVersionMap[pairId]) {
+            // If someone in this pair already got a version → reuse it
+            candidate.audio_version = pairVersionMap[pairId];
+
+        } else {
+            // Otherwise randomly assign and store it
+            const version = Math.random() < 0.5 ? "v1" : "v2";
+            candidate.audio_version = version;
+
+            if (pairId) {
+                pairVersionMap[pairId] = version;
+            }
+        }
     }
 
     const file = voices[candidate.voice_id].files[candidate.audio_version];
@@ -286,6 +320,21 @@ function createAudioRatingTrial(candidate, scenario) {
             audio.addEventListener("ended", function() {
                 submitButton.disabled = false;
             });
+        },
+
+        data: {
+            scenario: scenario.id,
+            candidate: candidate.name,
+            phase: "audio",
+            audio_version: candidate.audio_version,
+            voice_id: candidate.voice_id
+        },
+
+        on_finish: function(data) {
+            data.participant = PARTICIPANT_ID;
+            data.rating = data.response.rating;
+            delete data.response;
+            saveTrialData(data);
         }
     };
 }
@@ -319,13 +368,13 @@ var consent_html = `
 
   <p>We invite you to take part in this research study. Please read this document and discuss any questions or concerns that you may have with the Investigator.</p>
 
-  <p><strong>Purpose of the Research:</strong> This project investigates the cognitive structures and processes underlying human reasoning & problem-solving abilities. The tasks vary between conditions but all involve attending to linguistic or visual stimuli and making a perceptual or cognitive judgment, usually on a computer screen.</p>
+  <p><strong>Purpose of the Research:</strong> This project investigates the cognitive structures and processes underlying human reasoning & problem-solving abilities. The tasks vary between conditions but all involve attending to linguistic stimuli and making a perceptual or cognitive judgment on a computer screen.</p>
 
-  <p><strong>What You Will Be Asked to Do:</strong> You will be asked to complete a self questionnaire. After viewing images or audios, you will be asked to make certain judgements.</p>
+  <p><strong>What You Will Be Asked to Do:</strong> You will be asked to complete a self questionnaire. After viewing descriptions or audios, you will be asked to make certain judgements.</p>
 
   <p><strong>Risks and Discomforts:</strong> We do not foresee any risks or discomfort from your participation in the research. You may, however, experience some frustration or stress if you believe that you are not doing well. Certain participants may have difficulty with some of the tasks. If you do feel discomfort you may withdraw at any time.</p>
 
-  <p><strong>Benefits:</strong> There is no direct benefit to you, but knowledge may be gained that may help others in the future. The study takes approximately 20 minutes to complete, and you will receive $5.00 USD for your participation.</p>
+  <p><strong>Benefits:</strong> There is no direct benefit to you, but knowledge may be gained that may help others in the future. The study takes approximately 15 minutes to complete, and you will receive $2.50 USD for your participation.</p>
 
   <p><strong>Voluntary Participation:</strong> Your participation is entirely voluntary and you may choose to stop participating at any time. Your decision will not affect your relationship with the researcher, study staff, or York University.</p>
 
@@ -550,20 +599,31 @@ randomizedScenarios.forEach((scenario, index) => {
     });
 });
 
-// Final message
+// Final thank-you page
 timeline.push({
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<h2>Thank you for participating in this study!</h2><p>You have completed the experiment and your response has been recorded.</p>`,
+    stimulus: `
+        <h2>Thank you for participating!</h2>
+        <p>You have completed the experiment.</p>
+
+        <div style="
+            margin-top: 30px;
+            padding: 20px;
+            border: 2px dashed #333;
+            display: inline-block;
+            font-size: 20px;
+            font-weight: bold;
+        ">
+            Confirmation Code: ${CONFIRMATION_CODE}
+        </div>
+
+        <p style="margin-top: 20px;">
+            Please copy and paste the above code into CloudResearch to confirm your participation.
+        </p>
+    `,
     choices: "NO_KEYS",
-    trial_duration: 4000
+    trial_duration: 30000
 });
 
 /* ---------- Run Experiment ---------- */
 jsPsych.run(timeline);
-
-jsPsych.onFinish(() => {
-    document.body.innerHTML = `
-        <h2>Thank you!</h2>
-        <p>You have completed the experiment.</p>
-    `;
-});
